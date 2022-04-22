@@ -53,6 +53,7 @@ struct PokemonDetailView: View {
                 
                 HStack {
                     Text("Stats")
+                        .frame(width: 100)
                         .font(.system(size: 16, weight: .semibold))
                         .padding(.leading)
                     

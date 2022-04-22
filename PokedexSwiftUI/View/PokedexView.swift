@@ -9,16 +9,19 @@ import SwiftUI
 
 struct PokedexView: View {
     @ObservedObject var viewModel = PokemonViewModel()
-    @State var showFilterButtons = false
+    @State var shouldShowFilterButtons = false
     @State var filterApplied = false
     private let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
+    
+    var dataSource: [Pokemon] {
+        return filterApplied ? viewModel.filteredPokemon : viewModel.pokemon
+    }
     
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
                 ScrollView {
                     LazyVGrid(columns: gridItems, spacing: 16) {
-                        let dataSource = filterApplied ? viewModel.filteredPokemon : viewModel.pokemon
                         ForEach(dataSource) { pokemon in
                             NavigationLink(
                                 destination: NavigationLazyView(PokemonDetailView(pokemon: pokemon)),
@@ -36,39 +39,40 @@ struct PokedexView: View {
                 }
                 
                 VStack {
-                    if showFilterButtons {
-                        ActionButton(imageName: "fire", backgroundColor: .red, show: $showFilterButtons) {
+                    if shouldShowFilterButtons {
+                        ActionButton(imageName: "fire", backgroundColor: .red, show: $shouldShowFilterButtons) {
                             filterApplied.toggle()
-                            showFilterButtons.toggle()
+                            shouldShowFilterButtons.toggle()
                             viewModel.filterPokemon(by: "fire")
                         }
-                        ActionButton(imageName: "leaf", backgroundColor: .green, show: $showFilterButtons) {
+                        ActionButton(imageName: "leaf", backgroundColor: .green, show: $shouldShowFilterButtons) {
                             filterApplied.toggle()
-                            showFilterButtons.toggle()
+                            shouldShowFilterButtons.toggle()
                             viewModel.filterPokemon(by: "poison")
 
                         }
-                        ActionButton(imageName: "water", backgroundColor: .blue, show: $showFilterButtons) {
+                        ActionButton(imageName: "water", backgroundColor: .blue, show: $shouldShowFilterButtons) {
                             filterApplied.toggle()
-                            showFilterButtons.toggle()
+                            shouldShowFilterButtons.toggle()
                             viewModel.filterPokemon(by: "water")
 
                         }
-                        ActionButton(imageName: "lightning", backgroundColor: .yellow, show: $showFilterButtons) {
+                        ActionButton(imageName: "lightning", backgroundColor: .yellow, show: $shouldShowFilterButtons) {
                             filterApplied.toggle()
-                            showFilterButtons.toggle()
+                            shouldShowFilterButtons.toggle()
                             viewModel.filterPokemon(by: "electric")
                         }
                     }
                     
                     let imageName = filterApplied ? "refresh" : "filter"
-                    ActionButton(imageName: imageName, height: 36, width: 36, show: $showFilterButtons) {
-                        filterApplied ? filterApplied.toggle() : showFilterButtons.toggle()
-                    }.rotationEffect(.init(degrees: self.showFilterButtons ? 180 : 0))
+                    ActionButton(imageName: imageName, height: 36, width: 36, show: $shouldShowFilterButtons) {
+                        filterApplied ? filterApplied.toggle() : shouldShowFilterButtons.toggle()
+                    }
+                    .rotationEffect(.degrees(self.shouldShowFilterButtons ? 180 : 0))
                     
                 }
                 .padding()
-                .animation(.spring())
+                .animation(.spring(), value: self.shouldShowFilterButtons)
             }
         }
     }
